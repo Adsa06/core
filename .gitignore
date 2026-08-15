@@ -1,0 +1,40 @@
+# === JAVA ===
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+
+# Compilados de Maven
+/target/
+
+# Archivos temporales
+*.tmp
+*.swp
+
+# === VSCode ===
+.vscode/
+
+# === Sistema operativo ===
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# === IntelliJ IDEA (por si acaso) ===
+.idea/
+*.iml
+out/
+
+# === Eclipse (por si acaso) ===
+.project
+.classpath
+.settings/
+
+# === Otros ===
+*.db
+dist/

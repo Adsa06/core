@@ -11,6 +11,29 @@
   <name>core</name>
   <url>https://github.com/Adsa06/core</url>
 
+  <description>Core es una dependencia Java que centraliza utilidades para simplificar el desarrollo de aplicaciones. Incluye funcionalidades como Dependency Injection (DI), ORM/SQL, acceso a datos y otras herramientas reutilizables para crear proyectos más modulares y mantenibles.</description>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Aitor De Santos Amorós</name>
+      <email>soyadsa06@gmail.com</email>
+      <url>https://github.com/Adsa06</url>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/Adsa06/core.git</connection>
+    <developerConnection>scm:git:ssh://github.com/Adsa06/core.git</developerConnection>
+    <url>https://github.com/Adsa06/core</url>
+  </scm>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>21</maven.compiler.source>
@@ -39,6 +62,64 @@
   </dependencies>
 
   <build>
+    <plugins>
+      <!-- Genera el jar con el código fuente -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Genera el jar con el javadoc -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.6.3</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Firma todos los artefactos con GPG -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Sube todo al Central Publisher Portal -->
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.11.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <publishingServerId>central</publishingServerId>
+        </configuration>
+      </plugin>
+    </plugins>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
@@ -57,7 +138,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
+          <version>3.5.6</version>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>

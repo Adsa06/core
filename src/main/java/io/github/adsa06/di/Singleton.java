@@ -15,7 +15,6 @@ import java.lang.annotation.ElementType;
  * </p>
  *
  * @author Aitor
- * @since 1.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

@@ -28,9 +28,13 @@ public class InjectorTest {
      */
     @Test
     void getInstanceTest() {
-        Object object = new Object();
-        injector.registerInstance(Object.class, object);
+        DummyClass object = new DummyClass();
+        injector.registerInstance(DummyClass.class, object);
 
-        assertSame(object, injector.getInstance(Object.class));
+        assertSame(object, injector.getInstance(DummyClass.class));
+    }
+
+    private static class DummyClass {
+        
     }
 }

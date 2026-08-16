@@ -5,7 +5,7 @@ Proporciona un conjunto de utilidades y herramientas reutilizables, incluyendo D
 
 ## Características
 - Dependency Injection (DI)
-- ORM y SQL
+- ORM SQL y JSON
 - Acceso y gestión de datos
 - Utilidades comunes para proyectos Java
 - Arquitectura modular y reutilizable

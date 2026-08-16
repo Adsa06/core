@@ -99,6 +99,7 @@ public class Injector {
             injectFields(instance);
             return instance;
         } catch (ReflectiveOperationException e) {
+            instances.remove(type);
             throw new RuntimeException("An instance of " + type.getName() + " could not be created", e);
         } finally {
             onCreation.remove(type);

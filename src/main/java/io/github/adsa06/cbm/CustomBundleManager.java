@@ -44,7 +44,7 @@ public class CustomBundleManager {
     }
 
     private String getResourcePath(String baseName, String target) {
-        String resourcePath = baseName.replaceAll(".", "/") + "_" + target + ".properties";
+        String resourcePath = baseName.replace(".", "/") + "_" + target + ".properties";
         return resourcePath;
     }
 }

@@ -12,9 +12,11 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import io.github.adsa06.ormsql.annotations.Column;
-import io.github.adsa06.ormsql.annotations.Table;
-import io.github.adsa06.ormsql.dao.SimpleDao;
+import io.github.adsa06.ormsql.config.DatabaseInitializer;
+import io.github.adsa06.ormsql.config.Dialect;
+import io.github.adsa06.ormsql.mapping.annotation.Column;
+import io.github.adsa06.ormsql.mapping.annotation.Table;
+import io.github.adsa06.ormsql.repository.SimpleRepository;
 
 class SimpleDaoH2Test {
 
@@ -33,9 +35,9 @@ class SimpleDaoH2Test {
 
     @Test
     void findAllMapsH2RowsToAnnotatedEntity() throws SQLException, NoSuchMethodException {
-        SimpleDao dao = new DatabaseConnection(JDBC_URL, Dialect.H2).getSimpleDao();
+        SimpleRepository repository = new DatabaseInitializer(JDBC_URL, Dialect.H2).getSimpleDao();
 
-        List<User> users = dao.findAll(User.class);
+        List<User> users = repository.findAll(User.class);
 
         assertEquals(2, users.size());
         assertEquals(new User(1, "Ada"), users.get(0));
@@ -51,17 +53,17 @@ class SimpleDaoH2Test {
             statement.executeUpdate("INSERT INTO users (id, name) VALUES (7, 'Linus')");
         }
 
-        SimpleDao dao = new DatabaseConnection(JDBC_URL, Dialect.H2).getSimpleDao();
-        List<UserWithDefaultColumns> users = dao.findAll(UserWithDefaultColumns.class);
+        SimpleRepository repository = new DatabaseInitializer(JDBC_URL, Dialect.H2).getSimpleDao();
+        List<UserWithDefaultColumns> users = repository.findAll(UserWithDefaultColumns.class);
 
         assertEquals(List.of(new UserWithDefaultColumns(7, "Linus")), users);
     }
 
     @Test
     void findAllRejectsEntityWithoutTableAnnotation() throws SQLException, NoSuchMethodException {
-        SimpleDao dao = new DatabaseConnection(JDBC_URL, Dialect.H2).getSimpleDao();
+        SimpleRepository repository = new DatabaseInitializer(JDBC_URL, Dialect.H2).getSimpleDao();
 
-        assertThrows(IllegalStateException.class, () -> dao.findAll(UnmappedUser.class));
+        assertThrows(IllegalStateException.class, () -> repository.findAll(UnmappedUser.class));
     }
 
     @Table(name = "users")

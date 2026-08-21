@@ -1,4 +1,4 @@
-package io.github.adsa06.ormsql.annotations;
+package io.github.adsa06.ormsql.mapping.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

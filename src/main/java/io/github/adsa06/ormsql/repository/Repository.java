@@ -1,8 +1,8 @@
-package io.github.adsa06.ormsql.dao;
+package io.github.adsa06.ormsql.repository;
 
 import java.util.List;
 
-public interface Dao {
+public interface Repository {
     <T> List<T> findAll(Class<T> type) throws NoSuchMethodException, SecurityException;
     //<T> T find(Class<T> type, String column, String condition);
 

@@ -1,19 +1,19 @@
-package io.github.adsa06.ormsql;
+package io.github.adsa06.ormsql.config;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import io.github.adsa06.cbm.CustomBundleManager;
-import io.github.adsa06.ormsql.conditions.Predicate;
-import io.github.adsa06.ormsql.dao.SimpleDao;
+import io.github.adsa06.ormsql.query.predicate.Predicate;
+import io.github.adsa06.ormsql.repository.SimpleRepository;
 
-public class DatabaseConnection {
+public class DatabaseInitializer {
 
     private String jdbc;
     private CustomBundleManager bundle;
 
-    public DatabaseConnection(String jdbc, Dialect dialect) throws SQLException {
+    public DatabaseInitializer(String jdbc, Dialect dialect) throws SQLException {
         this.jdbc = jdbc;
         bundle = new CustomBundleManager("statement.statement", dialect.getName());
     }
@@ -22,8 +22,8 @@ public class DatabaseConnection {
         return DriverManager.getConnection(jdbc);
     }
 
-    public SimpleDao getSimpleDao() throws SQLException {
-        return new SimpleDao(getConnection(), bundle);
+    public SimpleRepository getSimpleDao() throws SQLException {
+        return new SimpleRepository(getConnection(), bundle);
     }
 
     public String buildPredicate(Predicate predicate) {

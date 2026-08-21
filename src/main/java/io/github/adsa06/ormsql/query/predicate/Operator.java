@@ -1,4 +1,4 @@
-package io.github.adsa06.ormsql.conditions;
+package io.github.adsa06.ormsql.query.predicate;
 
 public enum Operator {
     EQ("equal"),

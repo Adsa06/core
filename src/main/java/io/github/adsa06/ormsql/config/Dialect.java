@@ -1,4 +1,4 @@
-package io.github.adsa06.ormsql;
+package io.github.adsa06.ormsql.config;
 
 public enum Dialect {
     SQLITE("sqlite"),

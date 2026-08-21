@@ -1,4 +1,4 @@
-package io.github.adsa06.ormsql.dao;
+package io.github.adsa06.ormsql.repository;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -14,15 +14,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.github.adsa06.cbm.CustomBundleManager;
-import io.github.adsa06.ormsql.annotations.Column;
-import io.github.adsa06.ormsql.annotations.Table;
+import io.github.adsa06.ormsql.mapping.annotation.Column;
+import io.github.adsa06.ormsql.mapping.annotation.Table;
 
-public class SimpleDao implements Dao {
+public class SimpleRepository implements Repository {
 
     private Connection conn;
     private CustomBundleManager bundle;
 
-    public SimpleDao(Connection connection, CustomBundleManager bundle) {
+    public SimpleRepository(Connection connection, CustomBundleManager bundle) {
         this.conn = connection;
         this.bundle = bundle;
     }

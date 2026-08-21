@@ -32,6 +32,7 @@ public class SimpleDao implements Dao {
         return columnName.length() > 0 ? columnName : field.getName();
     }
 
+    // Falta mejor manejo de excepciones y manejo de herencia
     @Override
     public <T> List<T> findAll(Class<T> type) throws NoSuchMethodException, SecurityException {
         List<T> entities = new ArrayList<>();

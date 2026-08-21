@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import io.github.adsa06.cbm.CustomBundleManager;
+import io.github.adsa06.ormsql.conditions.Predicate;
 import io.github.adsa06.ormsql.dao.SimpleDao;
 
 public class DatabaseConnection {
@@ -23,5 +24,9 @@ public class DatabaseConnection {
 
     public SimpleDao getSimpleDao() throws SQLException {
         return new SimpleDao(getConnection(), bundle);
+    }
+
+    public String buildPredicate(Predicate predicate) {
+        return predicate.toSql(bundle);
     }
 }

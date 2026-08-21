@@ -33,7 +33,7 @@ class SimpleDaoH2Test {
 
     @Test
     void findAllMapsH2RowsToAnnotatedEntity() throws SQLException, NoSuchMethodException {
-        SimpleDao dao = new DatabaseConnection(JDBC_URL, Dialect.SQLITE).getSimpleDao();
+        SimpleDao dao = new DatabaseConnection(JDBC_URL, Dialect.H2).getSimpleDao();
 
         List<User> users = dao.findAll(User.class);
 
@@ -51,7 +51,7 @@ class SimpleDaoH2Test {
             statement.executeUpdate("INSERT INTO users (id, name) VALUES (7, 'Linus')");
         }
 
-        SimpleDao dao = new DatabaseConnection(JDBC_URL, Dialect.SQLITE).getSimpleDao();
+        SimpleDao dao = new DatabaseConnection(JDBC_URL, Dialect.H2).getSimpleDao();
         List<UserWithDefaultColumns> users = dao.findAll(UserWithDefaultColumns.class);
 
         assertEquals(List.of(new UserWithDefaultColumns(7, "Linus")), users);
@@ -59,7 +59,7 @@ class SimpleDaoH2Test {
 
     @Test
     void findAllRejectsEntityWithoutTableAnnotation() throws SQLException, NoSuchMethodException {
-        SimpleDao dao = new DatabaseConnection(JDBC_URL, Dialect.SQLITE).getSimpleDao();
+        SimpleDao dao = new DatabaseConnection(JDBC_URL, Dialect.H2).getSimpleDao();
 
         assertThrows(IllegalStateException.class, () -> dao.findAll(UnmappedUser.class));
     }

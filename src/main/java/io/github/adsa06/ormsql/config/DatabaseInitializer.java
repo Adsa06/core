@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import io.github.adsa06.cbm.CustomBundleManager;
-import io.github.adsa06.ormsql.query.predicate.Predicate;
 import io.github.adsa06.ormsql.repository.SimpleRepository;
 
 public class DatabaseInitializer {
@@ -15,7 +14,7 @@ public class DatabaseInitializer {
 
     public DatabaseInitializer(String jdbc, Dialect dialect) throws SQLException {
         this.jdbc = jdbc;
-        bundle = new CustomBundleManager("statement.statement", dialect.getName());
+        bundle = new CustomBundleManager("dialect.dialect", dialect.getName());
     }
 
     private Connection getConnection() throws SQLException {
@@ -24,9 +23,5 @@ public class DatabaseInitializer {
 
     public SimpleRepository getSimpleDao() throws SQLException {
         return new SimpleRepository(getConnection(), bundle);
-    }
-
-    public String buildPredicate(Predicate predicate) {
-        return predicate.toSql(bundle);
     }
 }

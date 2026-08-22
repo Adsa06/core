@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import io.github.adsa06.ormsql.config.DatabaseInitializer;
 import io.github.adsa06.ormsql.config.Dialect;
+import io.github.adsa06.ormsql.exception.ObjectRelationMappingException;
 import io.github.adsa06.ormsql.mapping.annotation.Column;
 import io.github.adsa06.ormsql.mapping.annotation.Table;
 import io.github.adsa06.ormsql.repository.SimpleRepository;
@@ -34,10 +35,10 @@ class SimpleDaoH2Test {
     }
 
     @Test
-    void findAllMapsH2RowsToAnnotatedEntity() throws SQLException, NoSuchMethodException {
+    void findAllMapsH2RowsToAnnotatedEntity() throws SQLException, ObjectRelationMappingException {
         SimpleRepository repository = new DatabaseInitializer(JDBC_URL, Dialect.H2).getSimpleDao();
 
-        List<User> users = repository.findAll(User.class);
+        List<User> users = repository.find(User.class);
 
         assertEquals(2, users.size());
         assertEquals(new User(1, "Ada"), users.get(0));
@@ -45,7 +46,7 @@ class SimpleDaoH2Test {
     }
 
     @Test
-    void findAllUsesFieldNameWhenColumnNameIsEmpty() throws SQLException, NoSuchMethodException {
+    void findAllUsesFieldNameWhenColumnNameIsEmpty() throws SQLException, ObjectRelationMappingException {
         try (Connection connection = DriverManager.getConnection(JDBC_URL);
                 Statement statement = connection.createStatement()) {
             statement.executeUpdate("DROP TABLE users");
@@ -54,16 +55,16 @@ class SimpleDaoH2Test {
         }
 
         SimpleRepository repository = new DatabaseInitializer(JDBC_URL, Dialect.H2).getSimpleDao();
-        List<UserWithDefaultColumns> users = repository.findAll(UserWithDefaultColumns.class);
+        List<UserWithDefaultColumns> users = repository.find(UserWithDefaultColumns.class);
 
         assertEquals(List.of(new UserWithDefaultColumns(7, "Linus")), users);
     }
 
     @Test
-    void findAllRejectsEntityWithoutTableAnnotation() throws SQLException, NoSuchMethodException {
+    void findAllRejectsEntityWithoutTableAnnotation() throws SQLException, ObjectRelationMappingException {
         SimpleRepository repository = new DatabaseInitializer(JDBC_URL, Dialect.H2).getSimpleDao();
 
-        assertThrows(IllegalStateException.class, () -> repository.findAll(UnmappedUser.class));
+        assertThrows(IllegalStateException.class, () -> repository.find(UnmappedUser.class));
     }
 
     @Table(name = "users")

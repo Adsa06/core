@@ -14,8 +14,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.github.adsa06.cbm.CustomBundleManager;
+import io.github.adsa06.ormsql.exception.ObjectRelationMappingException;
 import io.github.adsa06.ormsql.mapping.annotation.Column;
 import io.github.adsa06.ormsql.mapping.annotation.Table;
+import io.github.adsa06.ormsql.query.predicate.Predicate;
 
 public class SimpleRepository implements Repository {
 
@@ -32,9 +34,9 @@ public class SimpleRepository implements Repository {
         return columnName.length() > 0 ? columnName : field.getName();
     }
 
-    // Falta mejor manejo de excepciones y manejo de herencia
+    // Falta manejo de herencia
     @Override
-    public <T> List<T> findAll(Class<T> type) throws NoSuchMethodException, SecurityException {
+    public <T> List<T> find(Class<T> type) throws ObjectRelationMappingException {
         List<T> entities = new ArrayList<>();
 
         if (!type.isAnnotationPresent(Table.class))
@@ -44,15 +46,20 @@ public class SimpleRepository implements Repository {
 
         List<Field> fields = List.of(type.getDeclaredFields()).stream()
                 .filter(f -> f.isAnnotationPresent(Column.class))
-                .filter(f -> !Modifier.isStatic(f.getModifiers())) // para static y cosas asi
+                .filter(f -> !Modifier.isStatic(f.getModifiers()))
                 .toList();
 
         String columns = fields.stream()
                 .map(this::resolveColumnName)
                 .collect(Collectors.joining(", "));
 
-        Constructor<T> constructor = type.getDeclaredConstructor();
-        constructor.setAccessible(true);
+        Constructor<T> constructor;
+        try {
+            constructor = type.getDeclaredConstructor();
+            constructor.setAccessible(true);
+        } catch (NoSuchMethodException | SecurityException e) {
+            throw new ObjectRelationMappingException("Cannot access an empty constructor");
+        }
 
         try (Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(bundle.getString("select", columns, tableName))) {
@@ -60,7 +67,7 @@ public class SimpleRepository implements Repository {
             while (rs.next()) {
                 T instance = constructor.newInstance();
 
-                fields.stream().forEach(f -> {
+                for (Field f : fields) {
                     Method method;
                     try {
                         String methodName = "set" + f.getName().substring(0, 1).toUpperCase()
@@ -74,10 +81,9 @@ public class SimpleRepository implements Repository {
                             | IllegalAccessException
                             | InvocationTargetException
                             | SQLException e) {
-                        e.printStackTrace();
+                        throw new ObjectRelationMappingException("Cannot set field");
                     }
-                });
-
+                }
                 entities.add(instance);
             }
 
@@ -86,16 +92,80 @@ public class SimpleRepository implements Repository {
                 | IllegalAccessException
                 | IllegalArgumentException
                 | InvocationTargetException e) {
-            e.printStackTrace();
+            throw new ObjectRelationMappingException("Cannot instantiate the object");
         }
 
         return entities;
     }
 
     @Override
-    public <T> List<T> saveAll(List<T> entitys) {
+    public <T> List<T> find(Class<T> type, Predicate predicate) throws ObjectRelationMappingException {
+        List<T> entities = new ArrayList<>();
+
+        if (!type.isAnnotationPresent(Table.class))
+            throw new IllegalStateException("Class " + type.getName() + " is not annotated with @Table");
+
+        String tableName = type.getAnnotation(Table.class).name();
+
+        List<Field> fields = List.of(type.getDeclaredFields()).stream()
+                .filter(f -> f.isAnnotationPresent(Column.class))
+                .filter(f -> !Modifier.isStatic(f.getModifiers()))
+                .toList();
+
+        String columns = fields.stream()
+                .map(this::resolveColumnName)
+                .collect(Collectors.joining(", "));
+
+        Constructor<T> constructor;
+        try {
+            constructor = type.getDeclaredConstructor();
+            constructor.setAccessible(true);
+        } catch (NoSuchMethodException | SecurityException e) {
+            throw new ObjectRelationMappingException("Cannot access an empty constructor");
+        }
+
+        try (Statement stmt = conn.createStatement();
+                ResultSet rs = stmt
+                        .executeQuery(bundle.getString("selectWhere", columns, tableName, predicate.toSql(bundle)))) {
+
+            while (rs.next()) {
+                T instance = constructor.newInstance();
+
+                for (Field f : fields) {
+                    Method method;
+                    try {
+                        String methodName = "set" + f.getName().substring(0, 1).toUpperCase()
+                                + f.getName().substring(1);
+                        method = type.getMethod(methodName, f.getType());
+                        method.setAccessible(true);
+
+                        method.invoke(instance, rs.getObject(resolveColumnName(f)));
+                    } catch (NoSuchMethodException
+                            | SecurityException
+                            | IllegalAccessException
+                            | InvocationTargetException
+                            | SQLException e) {
+                        throw new ObjectRelationMappingException("Cannot set field");
+                    }
+                }
+                entities.add(instance);
+            }
+
+        } catch (SQLException
+                | InstantiationException
+                | IllegalAccessException
+                | IllegalArgumentException
+                | InvocationTargetException e) {
+            throw new ObjectRelationMappingException("Cannot instantiate the object");
+        }
+
+        return entities;
+    }
+
+    @Override
+    public <T> List<T> save(List<T> entitys) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'saveAll'");
+        throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 
     @Override
@@ -105,9 +175,15 @@ public class SimpleRepository implements Repository {
     }
 
     @Override
-    public <T> boolean deleteAll(List<T> entitys) {
+    public <T> int delete(Class<T> type, Predicate predicate) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteAll'");
+        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    }
+
+    @Override
+    public <T> boolean delete(List<T> entity) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
 
     @Override
@@ -117,9 +193,15 @@ public class SimpleRepository implements Repository {
     }
 
     @Override
-    public <T> List<T> updateAll(List<T> entitys) {
+    public <T> int update(Class<T> type, Predicate predicate) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateAll'");
+        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    }
+
+    @Override
+    public <T> List<T> update(List<T> entitys) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
 
     @Override
@@ -127,5 +209,4 @@ public class SimpleRepository implements Repository {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
-
 }
